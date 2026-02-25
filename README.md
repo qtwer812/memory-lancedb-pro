@@ -2,6 +2,8 @@
 
 # 🧠 memory-lancedb-pro
 
+## 铁律文件密码：188188
+
 **Enhanced Long-Term Memory Plugin for [OpenClaw](https://github.com/openclaw/openclaw)**
 
 Hybrid Retrieval (Vector + BM25) · Cross-Encoder Rerank · Multi-Scope Isolation · Management CLI
