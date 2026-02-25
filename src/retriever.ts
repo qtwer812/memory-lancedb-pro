@@ -32,8 +32,9 @@ export interface RetrievalConfig {
   rerankEndpoint?: string;
   /** Reranker provider format. Determines request/response shape and auth header.
    *  - "jina" (default): Authorization: Bearer, string[] documents, results[].relevance_score
+   *  - "siliconflow": same format as jina (alias, for clarity)
    *  - "pinecone": Api-Key header, {text}[] documents, data[].score */
-  rerankProvider?: "jina" | "pinecone";
+  rerankProvider?: "jina" | "siliconflow" | "pinecone";
   /**
    * Length normalization: penalize long entries that dominate via sheer keyword
    * density. Formula: score *= 1 / (1 + log2(charLen / anchor)).
@@ -114,7 +115,7 @@ function clamp01(value: number, fallback: number): number {
 // Rerank Provider Adapters
 // ============================================================================
 
-type RerankProvider = "jina" | "pinecone";
+type RerankProvider = "jina" | "siliconflow" | "pinecone";
 
 interface RerankItem { index: number; score: number }
 
@@ -143,6 +144,7 @@ function buildRerankRequest(
           rank_fields: ["text"],
         },
       };
+    case "siliconflow":
     case "jina":
     default:
       return {
@@ -172,6 +174,7 @@ function parseRerankResponse(
       if (!Array.isArray(items)) return null;
       return items.map(r => ({ index: r.index, score: r.score }));
     }
+    case "siliconflow":
     case "jina":
     default: {
       // Jina / SiliconFlow: { results: [{ index, relevance_score }] }

@@ -112,7 +112,7 @@ Query → BM25 FTS ─────┘
 
 ### 2. Cross-Encoder Reranking
 
-- **Reranker API**: Jina, SiliconFlow, or any compatible endpoint (5s timeout protection)
+- **Reranker API**: Jina, SiliconFlow, Pinecone, or any compatible endpoint (5s timeout protection)
 - **Hybrid Scoring**: 60% cross-encoder score + 40% original fused score
 - **Graceful Degradation**: Falls back to cosine similarity reranking on API failure
 
@@ -327,6 +327,50 @@ This plugin works with **any OpenAI-compatible embedding API**:
 | **OpenAI** | `text-embedding-3-small` | `https://api.openai.com/v1` | 1536 |
 | **Google Gemini** | `gemini-embedding-001` | `https://generativelanguage.googleapis.com/v1beta/openai/` | 3072 |
 | **Ollama** (local) | `nomic-embed-text` | `http://localhost:11434/v1` | 768 |
+
+### Rerank Providers
+
+Cross-encoder reranking supports multiple providers via `rerankProvider`:
+
+| Provider | `rerankProvider` | Endpoint | Example Model |
+|----------|-----------------|----------|---------------|
+| **Jina** (default) | `jina` | `https://api.jina.ai/v1/rerank` | `jina-reranker-v2-base-multilingual` |
+| **SiliconFlow** (free tier available) | `siliconflow` | `https://api.siliconflow.com/v1/rerank` | `BAAI/bge-reranker-v2-m3`, `Qwen/Qwen3-Reranker-8B` |
+| **Pinecone** | `pinecone` | `https://api.pinecone.io/rerank` | `bge-reranker-v2-m3` |
+
+<details>
+<summary><strong>SiliconFlow Example</strong></summary>
+
+```json
+{
+  "retrieval": {
+    "rerank": "cross-encoder",
+    "rerankProvider": "siliconflow",
+    "rerankEndpoint": "https://api.siliconflow.com/v1/rerank",
+    "rerankApiKey": "sk-xxx",
+    "rerankModel": "BAAI/bge-reranker-v2-m3"
+  }
+}
+```
+
+</details>
+
+<details>
+<summary><strong>Pinecone Example</strong></summary>
+
+```json
+{
+  "retrieval": {
+    "rerank": "cross-encoder",
+    "rerankProvider": "pinecone",
+    "rerankEndpoint": "https://api.pinecone.io/rerank",
+    "rerankApiKey": "pcsk_xxx",
+    "rerankModel": "bge-reranker-v2-m3"
+  }
+}
+```
+
+</details>
 
 ---
 
