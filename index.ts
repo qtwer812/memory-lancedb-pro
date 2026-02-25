@@ -46,6 +46,7 @@ interface PluginConfig {
     candidatePoolSize?: number;
     rerankApiKey?: string;
     rerankModel?: string;
+    rerankEndpoint?: string;
     recencyHalfLifeDays?: number;
     recencyWeight?: number;
     filterNoise?: boolean;

@@ -24,10 +24,13 @@ export interface RetrievalConfig {
   recencyWeight: number;
   /** Filter noise from results (default: true) */
   filterNoise: boolean;
-  /** Jina Reranker API key (enables cross-encoder reranking) */
+  /** Reranker API key (enables cross-encoder reranking) */
   rerankApiKey?: string;
-  /** Jina Reranker model (default: jina-reranker-v2-base-multilingual) */
+  /** Reranker model (default: jina-reranker-v2-base-multilingual) */
   rerankModel?: string;
+  /** Reranker API endpoint (default: https://api.jina.ai/v1/rerank).
+   *  Compatible with any service that accepts the Jina/OpenAI rerank request format. */
+  rerankEndpoint?: string;
   /**
    * Length normalization: penalize long entries that dominate via sheer keyword
    * density. Formula: score *= 1 / (1 + log2(charLen / anchor)).
@@ -84,6 +87,7 @@ export const DEFAULT_RETRIEVAL_CONFIG: RetrievalConfig = {
   recencyWeight: 0.10,
   filterNoise: true,
   rerankModel: "jina-reranker-v2-base-multilingual",
+  rerankEndpoint: "https://api.jina.ai/v1/rerank",
   lengthNormAnchor: 500,
   hardMinScore: 0.35,
   timeDecayHalfLifeDays: 60,
@@ -351,7 +355,8 @@ export class MemoryRetriever {
         const controller = new AbortController();
         const timeout = setTimeout(() => controller.abort(), 5000);
 
-        const response = await fetch("https://api.jina.ai/v1/rerank", {
+        const endpoint = this.config.rerankEndpoint || "https://api.jina.ai/v1/rerank";
+        const response = await fetch(endpoint, {
           method: "POST",
           headers: {
             "Content-Type": "application/json",
@@ -375,7 +380,7 @@ export class MemoryRetriever {
 
           // Validate response shape
           if (!Array.isArray(data.results)) {
-            console.warn("Jina rerank: invalid response shape, falling back to cosine");
+            console.warn("Rerank API: invalid response shape, falling back to cosine");
           } else {
             // Build a Set of returned indices to identify unreturned candidates
             const returnedIndices = new Set(data.results.map(r => r.index));
@@ -407,13 +412,13 @@ export class MemoryRetriever {
             return [...reranked, ...unreturned].sort((a, b) => b.score - a.score);
           }
         } else {
-          console.warn(`Jina rerank API returned ${response.status}, falling back to cosine`);
+          console.warn(`Rerank API returned ${response.status}, falling back to cosine`);
         }
       } catch (error) {
         if (error instanceof Error && error.name === "AbortError") {
-          console.warn("Jina rerank timed out (5s), falling back to cosine");
+          console.warn("Rerank API timed out (5s), falling back to cosine");
         } else {
-          console.warn("Jina rerank failed, falling back to cosine:", error);
+          console.warn("Rerank API failed, falling back to cosine:", error);
         }
       }
     }

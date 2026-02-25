@@ -37,7 +37,7 @@ The built-in `memory-lancedb` plugin in OpenClaw provides basic vector search. *
 | Vector search | ✅ | ✅ |
 | BM25 full-text search | ❌ | ✅ |
 | Hybrid fusion (Vector + BM25) | ❌ | ✅ |
-| Cross-encoder rerank (Jina) | ❌ | ✅ |
+| Cross-encoder rerank (Jina / custom endpoint) | ❌ | ✅ |
 | Recency boost | ❌ | ✅ |
 | Time decay | ❌ | ✅ |
 | Length normalization | ❌ | ✅ |
@@ -112,7 +112,7 @@ Query → BM25 FTS ─────┘
 
 ### 2. Cross-Encoder Reranking
 
-- **Jina Reranker API**: `jina-reranker-v2-base-multilingual` (5s timeout protection)
+- **Reranker API**: Jina, SiliconFlow, or any compatible endpoint (5s timeout protection)
 - **Hybrid Scoring**: 60% cross-encoder score + 40% original fused score
 - **Graceful Degradation**: Falls back to cosine similarity reranking on API failure
 
@@ -287,6 +287,7 @@ openclaw config get plugins.slots.memory
     "rerank": "cross-encoder",
     "rerankApiKey": "jina_xxx",
     "rerankModel": "jina-reranker-v2-base-multilingual",
+    "rerankEndpoint": "https://api.jina.ai/v1/rerank",
     "candidatePoolSize": 20,
     "recencyHalfLifeDays": 14,
     "recencyWeight": 0.1,
