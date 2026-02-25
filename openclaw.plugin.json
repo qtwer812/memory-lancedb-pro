@@ -104,12 +104,23 @@
           },
           "rerankApiKey": {
             "type": "string",
-            "description": "API key for Jina Reranker (enables cross-encoder reranking)"
+            "description": "API key for reranker service (enables cross-encoder reranking)"
           },
           "rerankModel": {
             "type": "string",
             "default": "jina-reranker-v2-base-multilingual",
-            "description": "Jina Reranker model name"
+            "description": "Reranker model name"
+          },
+          "rerankEndpoint": {
+            "type": "string",
+            "default": "https://api.jina.ai/v1/rerank",
+            "description": "Reranker API endpoint URL. Compatible with Jina, SiliconFlow, Pinecone, or any service with a similar interface."
+          },
+          "rerankProvider": {
+            "type": "string",
+            "enum": ["jina", "siliconflow", "pinecone"],
+            "default": "jina",
+            "description": "Reranker provider format. Determines request/response shape and auth header."
           },
           "candidatePoolSize": {
             "type": "integer",
@@ -277,20 +288,31 @@
     },
     "retrieval.rerank": {
       "label": "Reranking Mode",
-      "help": "Re-score fused results for better quality (cross-encoder uses Jina Reranker API)",
+      "help": "Re-score fused results for better quality (cross-encoder uses configured reranker API)",
       "advanced": true
     },
     "retrieval.rerankApiKey": {
       "label": "Reranker API Key",
       "sensitive": true,
-      "placeholder": "jina_...",
-      "help": "Jina Reranker API key for cross-encoder reranking",
+      "placeholder": "jina_... / sk-... / pcsk_...",
+      "help": "Reranker API key for cross-encoder reranking",
       "advanced": true
     },
     "retrieval.rerankModel": {
       "label": "Reranker Model",
       "placeholder": "jina-reranker-v2-base-multilingual",
-      "help": "Jina Reranker model name",
+      "help": "Reranker model name (e.g. jina-reranker-v2-base-multilingual, BAAI/bge-reranker-v2-m3)",
+      "advanced": true
+    },
+    "retrieval.rerankEndpoint": {
+      "label": "Reranker Endpoint",
+      "placeholder": "https://api.jina.ai/v1/rerank",
+      "help": "Custom reranker API endpoint URL",
+      "advanced": true
+    },
+    "retrieval.rerankProvider": {
+      "label": "Reranker Provider",
+      "help": "Provider format: jina (default), siliconflow, or pinecone",
       "advanced": true
     },
     "retrieval.candidatePoolSize": {
